@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "description": "streaming app",
   "main": "index.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon -r dotenv/config --experimental-json-modules src/index.js"
   },
   "keywords": [
     "javascript",
@@ -14,6 +15,9 @@
   "author": "darshan Jomaling Patil",
   "license": "ISC",
   "dependencies": {
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.12.1",
     "nodemon": "^3.1.9",
     "prettier": "^3.5.3"
   }
