@@ -17,6 +17,7 @@ let fileUpload=async function(localStorage){
             }
         )
         console.log("File uploded successfully!! ",uploadResult.url);
+        fs.unlinkSync(localStorage);
         return uploadResult;
     } catch (error) {
         fs.unlinkSync(localStorage);
