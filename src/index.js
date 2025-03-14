@@ -8,7 +8,7 @@ connectDB().then(()=>{
     app.listen(process.env.PORT,()=>{
         console.log(`App is Listing on ${process.env.PORT}`);
     })
-    .catch((err)=>{
-        console.log(`Failed to Connect Database ${err}`);
-    })
+})
+.catch((err)=>{
+    console.log(`Failed to Connect Database ${err}`);
 });
