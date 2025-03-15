@@ -72,7 +72,7 @@ userSchema.methods.generateAccessToken=function(){
         }
     )
 }
-userSchema.methods.RefreshAccessToken=function(){
+userSchema.methods.GenerateRefreshToken=function(){
     return jwt.sign(
         {
             _id:this._id,
