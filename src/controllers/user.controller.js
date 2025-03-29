@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { User } from "../models/user.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -279,4 +280,125 @@ const changeInfo=asynchandler(async(req,res)=>{
 })
 
 
-export {registerUser,loginUser,logOutUser,refreshAccessToken,changePassword,changeAvatar,changeCoverImage,changeInfo}
+const getUserProfile=asynchandler(async(req,res)=>{
+    const userName=req.params; // we get user from url 
+    if(!userName?.trim()){
+        throw new ApiError("User Not Found",400);
+    }
+    const user =await User.aggregate([
+        {
+            $match:userName?.trim(),
+        },
+        {
+            $lookup:{
+                from:"subscriptions", // from where
+                localField:"_id",
+                foreignField:"channel",// up and this line is used to join which will be on basis of _id==channel
+                as:"Subscribers" // name of output
+            }
+        },
+        {
+            $lookup:{
+                from:"subscriptions",
+                localField:"_id",
+                foreignField:"subscriber",
+                as:"SubscribedTo"
+            }
+        },
+        {
+            $addFields:{
+                subscribersCount:{
+                    $size:"$Subscribers"
+                },
+                subscribedTOCount:{
+                    $size:"$SubscribedTo"
+                },
+                isSubscribed:{
+                    $cond:{
+                        if:{$in: [req?.user._id,"$Subscribers.subscriber"]},
+                        then:true,
+                        else:false
+                    }
+                    
+                }
+            }
+        },
+        {
+            $project:{
+                fullName:1,
+                userName:1,
+                avatar:1,
+                coverImage:1,
+                subscribersCount:1,
+                subscribedTOCount:1,
+                isSubscribed:1
+                
+
+
+            }
+        }
+        
+    ])
+    if(!user?.length()){
+        throw new ApiError("Channel not found",400)
+    }
+    return res.status(200).json(
+        new ApiResponse(200,"Success",user[0])
+    )
+
+})
+
+const watchHistory=asynchandler(async(req,res)=>{
+    const history=await User.aggregate([
+        {
+        $match: {
+            _id:new mongoose.Types.ObjectId(req.user._id)
+        }
+            
+    },
+    {
+        $lookup:{
+            from:"videos",
+            localField:"watchHistory",
+            foreignField:"_id",
+            as:"history",
+            pipeline:[
+                {
+                    $lookup:{
+                        from:"users",
+                        localField:"owner",
+                        foreignField:"_id",
+                        as:"owner",
+                        pipeline:[
+                            {
+                                $project:{
+                                    fullName:1,
+                                    userName:1,
+                                    avatar:1,
+                                    coverImage:1
+                                }
+                            }
+                        ]
+
+                    }
+                },
+                {
+                    $addFields:{
+                        owner:{
+                             $first:"$owner"
+                        }
+                       
+                    }
+                }
+                
+            ]
+        }
+    }
+])
+return res.status(200).json(
+    new ApiResponse(200,"Success",history[0] || {})
+)
+
+})
+
+export {registerUser,loginUser,logOutUser,refreshAccessToken,changePassword,changeAvatar,changeCoverImage,changeInfo,getUserProfile,watchHistory}
