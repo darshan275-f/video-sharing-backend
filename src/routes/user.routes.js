@@ -30,7 +30,7 @@ router.route("/changeCoverImage").patch(verifyJwt,upload.single("coverImage"),ch
 
 router.route("/changeInfo").patch(verifyJwt,changeInfo);
 
-router.route("/c/:userName").get(getUserProfile);
+router.route("/c/:userName").get(verifyJwt,getUserProfile);
 
 router.route("/history").get(verifyJwt,watchHistory);
 

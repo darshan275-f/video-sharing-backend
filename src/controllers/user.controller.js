@@ -281,13 +281,16 @@ const changeInfo=asynchandler(async(req,res)=>{
 
 
 const getUserProfile=asynchandler(async(req,res)=>{
-    const userName=req.params; // we get user from url 
-    if(!userName?.trim()){
+    const {userName}=req.params; // we get user from url 
+    if(!userName){
         throw new ApiError("User Not Found",400);
     }
+
     const user =await User.aggregate([
         {
-            $match:userName?.trim(),
+            $match:{
+                userName:userName
+            },
         },
         {
             $lookup:{
@@ -339,7 +342,7 @@ const getUserProfile=asynchandler(async(req,res)=>{
         }
         
     ])
-    if(!user?.length()){
+    if(!user?.length){
         throw new ApiError("Channel not found",400)
     }
     return res.status(200).json(
