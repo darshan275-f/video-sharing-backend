@@ -2,9 +2,9 @@ import { deleteVideo, getVideoByID, togglePublishStatus, updateVideo, videoUploa
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import {verifyJwt} from '../Middlewares/auth.middleware.js'
-const Videorouter=Router();
+const videoRouter=Router();
 
-Videorouter.route("/videoUpload").post(upload.fields([{
+videoRouter.route("/videoUpload").post(upload.fields([{
     name:"thumbnail",
     maxCount:1
 },
@@ -13,18 +13,18 @@ Videorouter.route("/videoUpload").post(upload.fields([{
     maxCount:1
 }]),verifyJwt,videoUpload)
 
-Videorouter.route("/getVideo/:videoId").get(getVideoByID);
+videoRouter.route("/getVideo/:videoId").get(getVideoByID);
 
 
-Videorouter.route("/updateVideo/:videoId").patch(verifyJwt,upload.fields([
+videoRouter.route("/updateVideo/:videoId").patch(verifyJwt,upload.fields([
     {
         name:"thumbnail",
         maxCount:1
     }
 ]),updateVideo);
 
-Videorouter.route("/deleteVideo/:videoId").post(verifyJwt,deleteVideo);
+videoRouter.route("/deleteVideo/:videoId").post(verifyJwt,deleteVideo);
 
-Videorouter.route("/TogglePublish/:videoId").patch(verifyJwt,togglePublishStatus);
+videoRouter.route("/TogglePublish/:videoId").patch(verifyJwt,togglePublishStatus);
 
-export default Videorouter;
+export default videoRouter;

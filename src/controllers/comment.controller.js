@@ -81,7 +81,7 @@ const deleteComment = asynchandler(async (req, res) => {
     }
     await Comment.findByIdAndDelete(commentId);
     return res.status(200).json(
-        new ApiError(200,"Comment deleted Successfully",{})
+        new ApiResponse(200,"Comment deleted Successfully",{})
     )
 })
 
