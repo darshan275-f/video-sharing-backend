@@ -4,6 +4,65 @@ import { ApiError } from '../utils/ApiError.js';
 import { ApiResponse } from '../utils/ApiResponse.js';
 import { asynchandler } from '../utils/asynchandler.js';
 import { fileUpload } from '../utils/cloudinary.js';
+import { User } from '../models/user.models.js';
+
+
+const getAllVideos = asynchandler(async (req, res) => {
+    const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
+    //TODO: get all videos based on query, sort, pagination
+    const aggregation=await User.aggregate([
+        {
+            $match:{
+                _id:new mongoose.Types.ObjectId(userId)
+            }
+        },
+        {
+            $lookup:{
+                from:"videos",
+                foreignField:"owner",
+                localField:"_id",
+                as:"allVideos",
+                pipeline:[
+                    {
+                        $lookup:{
+                            from:"users",
+                            localField:"owner",
+                            foreignField:"_id",
+                            as:"owner",
+                            pipeline:[
+                                {
+                                    $project:{
+                                        fullName:1,
+                                        userName:1,
+                                        avatar:1,
+                                        coverImage:1
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+                        
+                
+            }
+        },
+
+    ])
+
+    let options={
+        page:parseInt(page),
+        limit:parseInt(limit),
+        sort: { [sortBy]: sortType === "asc" ? 1 : -1 } 
+    }
+    const videos=await Video.aggregatePaginate(aggregation,options);
+    if(!videos){
+        throw new ApiError("Unable to fetch videos or user not found",500);
+    }
+    return res.status(200).json(
+        new ApiResponse(200,"All Videos are fetched!!",videos)
+    )
+})
+
 
 
 const videoUpload=asynchandler(async(req,res)=>{
@@ -190,4 +249,4 @@ const togglePublishStatus = asynchandler(async (req, res) => {
 })
 
  
-export {videoUpload,getVideoByID,updateVideo,deleteVideo,togglePublishStatus}
+export {videoUpload,getVideoByID,updateVideo,deleteVideo,togglePublishStatus,getAllVideos}

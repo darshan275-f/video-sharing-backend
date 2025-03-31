@@ -14,7 +14,6 @@ const addComment = asynchandler(async (req, res) => {
     
     // TODO: add a comment to a video
     const {videoID}=req.params;
-    console.log(videoID);
     const video = await Video.findById(videoID);
     if(!video){
         throw new ApiError("Video is not found",400);

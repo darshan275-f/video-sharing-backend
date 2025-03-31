@@ -1,4 +1,4 @@
-import { deleteVideo, getVideoByID, togglePublishStatus, updateVideo, videoUpload } from "../controllers/video.controller.js";
+import { deleteVideo, getAllVideos, getVideoByID, togglePublishStatus, updateVideo, videoUpload } from "../controllers/video.controller.js";
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
 import {verifyJwt} from '../Middlewares/auth.middleware.js'
@@ -12,6 +12,8 @@ videoRouter.route("/videoUpload").post(upload.fields([{
     name:"video",
     maxCount:1
 }]),verifyJwt,videoUpload)
+
+videoRouter.route("/getAllVideo/:userId").get(getAllVideos)
 
 videoRouter.route("/getVideo/:videoId").get(getVideoByID);
 
