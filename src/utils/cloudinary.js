@@ -4,25 +4,35 @@ import fs from 'fs';
 cloudinary.config({ 
     cloud_name: process.env.CLOUD_NAME, 
     api_key: process.env.CLOUD_API_KEY, 
-    api_secret: process.env.CLOUD_API_SECRET // Click 'View API Keys' above to copy your API secret
+    api_secret: process.env.CLOUD_API_SECRET 
 });
 
-let fileUpload=async function(localStorage){
+const fileUpload = async (filePath) => {
     try {
-        if(!localStorage) return null;
-        const uploadResult = await cloudinary.uploader
-        .upload(
-          localStorage, {
-                resource_type:'auto',
-            }
-        )
-        console.log("File uploded successfully!! ",uploadResult.url);
-        fs.unlinkSync(localStorage);
+        if (!filePath) return null;
+
+        const uploadResult = await cloudinary.uploader.upload(filePath, {
+            resource_type: 'auto',
+        });
+
+        console.log("File uploaded successfully!!", uploadResult.url);
+
+        // Check if the file exists before deleting
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
         return uploadResult;
     } catch (error) {
-        fs.unlinkSync(localStorage);
+        console.error("Upload failed:", error);
+        
+        // Check if the file exists before deleting
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+        }
+
         return null;
     }
-}
+};
 
-export {fileUpload};
+export { fileUpload };

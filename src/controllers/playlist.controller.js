@@ -1,4 +1,5 @@
 import { Playlist } from "../models/playlist.model.js";
+import { Video } from "../models/video.models.js";
 import { ApiError } from "../utils/ApiError.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asynchandler } from "../utils/asynchandler.js"
@@ -67,7 +68,9 @@ const addVideoToPlaylist = asynchandler(async (req, res) => {
     if (!req.user._id.equals(playlist.owner)) {
         throw new ApiError("You are not owner of this playlist", 400);
     }
-    const video = await Playlist.findOne({ _id: playlistId, videos: { $in: [videoId] } });
+
+    const video = await Video.findById(videoId);
+  
     if (!video) {
         throw new ApiError("this is no such video", 400);
     }
