@@ -8,10 +8,10 @@ const playlistSchema=new mongoose.Schema({
     description:{
         type:String,
     },
-    videos:{
+    videos:[{
        type:mongoose.Schema.Types.ObjectId,
         ref:"Video"
-    },
+    }],
     owner:{
        type:mongoose.Schema.Types.ObjectId,
         ref:"User",

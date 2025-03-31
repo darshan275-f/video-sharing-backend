@@ -1,14 +1,65 @@
+import mongoose from "mongoose";
 import { Comment } from "../models/comment.models.js";
 import { Video } from "../models/video.models.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import {asynchandler} from "../utils/asynchandler.js";
-// const getVideoComments = asynchandler(async (req, res) => {
-//     //TODO: get all comments for a video
-//     const {videoId} = req.params
-//     const {page = 1, limit = 10} = req.query
+const getVideoComments = asynchandler(async (req, res) => {
+    const { videoId } = req.params;
+    const { page = 1, limit = 10 } = req.query;
 
-// })
+    // Check if the video exists
+    const videoExists = await Video.findById(videoId);
+    if (!videoExists) {
+        throw new ApiError("Video not found", 404);
+    }
+
+    // Aggregation query to fetch comments with user details
+    const aggregation = [
+        {
+            $match: { video: new mongoose.Types.ObjectId(videoId) } // Ensure correct field name
+        },
+        {
+            $lookup: {
+                from: "users", // Reference to the User collection
+                localField: "owner",
+                foreignField: "_id",
+                as: "ownerDetails"
+            }
+        },
+        {
+            $unwind: "$ownerDetails" // Convert array into an object
+        },
+        {
+            $project: {
+                _id: 1,
+                content: 1,
+                createdAt: 1,
+                "ownerDetails._id": 1,
+                "ownerDetails.fullName": 1,
+                "ownerDetails.userName": 1
+            }
+        }
+    ];
+
+    // Pagination options
+    let options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+    };
+
+    // Fetch paginated comments
+    const comments = await Comment.aggregatePaginate(Comment.aggregate(aggregation), options);
+
+    if (!comments || comments.docs.length === 0) {
+        throw new ApiError("No comments found for this video", 404);
+    }
+
+    return res.status(200).json(
+        new ApiResponse(200, "All comments fetched successfully", comments)
+    );
+});
+
 
 const addComment = asynchandler(async (req, res) => {
     
@@ -88,5 +139,6 @@ export {
  
     addComment, 
     updateComment,
-     deleteComment
+     deleteComment,
+     getVideoComments
     }

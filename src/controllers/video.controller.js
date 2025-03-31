@@ -8,46 +8,45 @@ import { User } from '../models/user.models.js';
 
 
 const getAllVideos = asynchandler(async (req, res) => {
-    const { page = 1, limit = 10, query, sortBy, sortType, userId } = req.query
+    const { page = 1, limit = 10, query, sortBy, sortType} = req.query
+    const {userId}=req.params
     //TODO: get all videos based on query, sort, pagination
-    const aggregation=await User.aggregate([
+    const aggregation = [
         {
-            $match:{
-                _id:new mongoose.Types.ObjectId(userId)
+            $match: { owner: new mongoose.Types.ObjectId(userId) } // Match videos by owner ID
+        },
+        {
+            $lookup: {
+                from: "users",
+                foreignField: "_id",
+                localField: "owner",
+                as: "ownerDetails"
             }
         },
         {
-            $lookup:{
-                from:"videos",
-                foreignField:"owner",
-                localField:"_id",
-                as:"allVideos",
-                pipeline:[
-                    {
-                        $lookup:{
-                            from:"users",
-                            localField:"owner",
-                            foreignField:"_id",
-                            as:"owner",
-                            pipeline:[
-                                {
-                                    $project:{
-                                        fullName:1,
-                                        userName:1,
-                                        avatar:1,
-                                        coverImage:1
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
-                        
-                
+            $unwind: "$ownerDetails" // Convert ownerDetails from array to object
+        },
+        {
+            $project: {
+                _id: 1,
+                title: 1,
+                description: 1,
+                videoFile: 1,
+                thumbnail: 1,
+                isPublished: 1,
+                duration: 1,
+                createdAt: 1,
+                "ownerDetails._id": 1,
+                "ownerDetails.fullName": 1,
+                "ownerDetails.userName": 1,
+                "ownerDetails.email": 1
             }
         },
-
-    ])
+        {
+            $sort: { [sortBy]: sortType === "asc" ? 1 : -1 } // Sort based on query params
+        }
+    ];
+    
 
     let options={
         page:parseInt(page),

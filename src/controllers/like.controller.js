@@ -10,10 +10,13 @@ import mongoose from "mongoose";
 const toggleVideoLike = asynchandler(async (req, res) => {
     const {videoId} = req.params
     //TODO: toggle like on video
+    if(!req.user){
+        throw new ApiError("Login or signin first",400);
+    }
     const user=req?.user._id;
     const isVideoExist=await Video.findById(videoId);
     if(!isVideoExist){
-        throw new ApiError("Video doesn't exist");
+        throw new ApiError("Video doesn't exist",400);
     }
 
     const isExistLike=await Like.findOne({
@@ -41,6 +44,9 @@ const toggleVideoLike = asynchandler(async (req, res) => {
 const toggleCommentLike = asynchandler(async (req, res) => {
     const {commentId} = req.params
     //TODO: toggle like on comment
+    if(!req.user){
+        throw new ApiError("Login or signin first",400);
+    }
     const comment =await Comment.findById(commentId);
     if(!comment){
         throw new ApiError("Unable to find comment",400);
@@ -64,7 +70,10 @@ const toggleCommentLike = asynchandler(async (req, res) => {
 const toggleTweetLike = asynchandler(async (req, res) => {
     const {tweetId} = req.params
     //TODO: toggle like on tweet
-   
+    if(!req.user){
+        throw new ApiError("Login or signin first",400);
+    }
+
     const tweet =await Tweet.findById(tweetId);
     if(!tweet){
         throw new ApiError("Unable to find tweet",400);
@@ -87,6 +96,9 @@ const toggleTweetLike = asynchandler(async (req, res) => {
 
 const getLikedVideos = asynchandler(async (req, res) => {
     //TODO: get all liked videos
+    if(!req.user){
+        throw new ApiError("Login or signin first",400);
+    }
     const user=req?.user._id;
     const LikedVideos=await Like.aggregate([
         {
