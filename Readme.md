@@ -1,4 +1,4 @@
-# VTube Backend
+# VTube Backend - Video Sharing Platfornm 
 
 ## Overview
 VTube Backend is a **Node.js and Express.js** application that provides RESTful APIs for a video streaming platform. It includes features like **video management, subscriptions, comments, and user authentication**. The backend is optimized using **MongoDB aggregation pipelines and pagination** for efficient data retrieval.
@@ -23,8 +23,8 @@ VTube Backend is a **Node.js and Express.js** application that provides RESTful 
 
 ---
 ## Documentation
-- **Postman API Collection**: [[View Here](https://documenter.getpostman.com/view/42751716/2sB2cPjkTs)](#)
-- **Database Models & Schema**: [[View Here](https://app.eraser.io/workspace/YtPqZ1VogxGy1jzIDkzj)](#)
+- **Postman API Collection**: [[View Here](https://documenter.getpostman.com/view/42751716/2sB2cPjkTs)]
+- **Database Models & Schema**: [[[View Here](https://app.eraser.io/workspace/Jm5NloMMruQJudgHNSmB?origin=share)]]
 ---
 
 
@@ -37,7 +37,7 @@ VTube Backend is a **Node.js and Express.js** application that provides RESTful 
 ### Steps to Run
 ```bash
 # Clone the repository
-git clone https://github.com/your-username/vtube-backend.git
+[git clone https://github.com/darshan275-f/video-sharing-backend.git
 
 # Navigate into the project directory
 cd vtube-backend
