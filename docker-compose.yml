@@ -1,0 +1,30 @@
+version: "1"
+
+services:
+  mongo_db:
+    container_name: database_container
+    image: mongo:latest
+    restart: always
+    volumes:
+      - mongo_db:/data/db
+  
+  app:
+    build: .
+    ports:
+      - 8000:8000
+    environment:
+      - PORT
+      - MONGODB_URL
+      - CORS_ORIGIN
+      - ACCESS_TOKEN_SECRET
+      - ACCESS_TOKEN_EXPIRY
+      - REFRESH_TOKEN_SECRET
+      - REFRESH_TOKEN_EXPIRY
+      - CLOUD_NAME
+      - CLOUD_API_KEY
+      - CLOUD_API_SECRET
+    depends_on:
+      - mongo_db
+
+volumes:
+  mongo_db: {}

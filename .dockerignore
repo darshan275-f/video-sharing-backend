@@ -1,0 +1,35 @@
+# Node modules (you rebuild them inside Docker anyway)
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Environment files (handled through secrets or build args instead)
+.env
+.env.local
+.env.*.local
+
+# OS-specific
+.DS_Store
+Thumbs.db
+
+# Git and version control
+.git
+.gitignore
+
+# Docker stuff
+Dockerfile
+.dockerignore
+
+# IDE/editor config
+.vscode
+.idea
+
+# Tests and coverage
+coverage
+*.test.js
+*.spec.js
+__tests__
+
+# Build output (if any)
+dist
+build
